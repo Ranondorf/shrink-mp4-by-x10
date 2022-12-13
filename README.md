@@ -1,5 +1,5 @@
 # scale_down
-Script to shrink MP4 files. Usage is shrinking the files an android phone takes to a reasonable size for messaging apps.
+Script to shrink MP4 files. Use case is shrinking the videos taken by an Android phone. This makes them easier to distribute by electronic means.
 ## Installation
 ### Prequisites
 - Requires FFMPEG to perform shrinking function.
