@@ -4,7 +4,7 @@ Script to shrink MP4 files. Use case is shrinking the videos taken by an Android
 ### Prequisites
 - Requires FFMPEG to perform shrinking function.
 ### Installing Program
-Copy script. Path of the video files can be inthe same folder or can be specified as an argument. See script comments for more information.
+Run bash script with two arguments (source dir and destination dir: include trailing slash). Source dir should have the large MP4 files.
 ## Credits
 Ruwan Samaranayake
 ## License
