@@ -19,7 +19,7 @@ echo "$(date) Script starting" >> $log_file
 
 if [ $# -ne 2 ];
 then
-    echo "Inaccurate number of arguments, 2 expected."
+    echo "Inaccurate number of arguments, 2 expected. Script aborted."
     exit 1
 fi
 
@@ -31,7 +31,6 @@ ffmpeg --help > /dev/null 2>&1
 if [ $? -eq 127 ];
    then
        echo "ffmpeg is missing, aborting." >> $log_file
-       echo "The rsync program is required to use this script."
        exit 1
 fi
 
@@ -40,33 +39,35 @@ echo "Input file path provided: $1" >> $log_file
 echo "Output file path provided: $2" >> $log_file
 
 
-ls $1*.mp4 &> /dev/null 2>&1
+ls "$1"*.mp4 &> /dev/null 2>&1
 if [ $? -eq 2 ];
 then
 	echo "$(date) No files to process now in path $1" >> $log_file
+	echo "Nothing to do." >> $log_file
     exit 0
 fi
 
 
-for INPUT_FILE in $1*.mp4
+for INPUT_FILE in "$1"*.mp4
 do
         # Strip input dir from file
 	BASE_FILE=$(basename "$INPUT_FILE")
 	# Create output file with output path
 	OUTPUT_FILE=$2$BASE_FILE
-	ffmpeg -n -i $INPUT_FILE -vf "scale=trunc(iw/4)*2:trunc(ih/4)*2" -c:v libx265 -crf 28 $OUTPUT_FILE &> /dev/null
+	# variables are in quotes to handle spaces in path name
+        ffmpeg -n -i "$INPUT_FILE" -vf "scale=trunc(iw/4)*2:trunc(ih/4)*2" -c:v libx265 -crf 28 "$OUTPUT_FILE" &> /dev/null
    if [ $? -eq 0 ]; 
    then
-       rm $INPUT_FILE
-       echo "$(date) Processing completed successfully for $BASE_FILE". Deleted from source and output file in target directory >> $log_file
+       rm "$INPUT_FILE"
+       echo "$(date) Processing completed successfully for $BASE_FILE" >> $log_file
    elif [ $? -eq 1 ]; 
    then
        echo "$(date) Processing failed for $INPUT_FILE, trying again" >> $log_file
-       ffmpeg -n -i $INPUT_FILE -vf "scale=trunc(iw/4)*2:trunc(ih/4)*2" -c:v libx265 -crf 28 $OUTPUT_FILE &> /dev/null
+       ffmpeg -n -i "$INPUT_FILE" -vf "scale=trunc(iw/4)*2:trunc(ih/4)*2" -c:v libx265 -crf 28 "$OUTPUT_FILE" &> /dev/null
        if [ $? -eq 0 ]; 
        then
-           echo "$(date) Processing completed successfully for $BASE_FILE on second attempt. Deleted from source and output file in target directory" >> $log_file
-	   rm $INPUT_FILE
+	   rm "$INPUT_FILE"
+           echo "$(date) Processing completed successfully for $BASE_FILE on second attempt" >> $log_file
        elif [ $? -eq 1 ]; 
        then
            echo "$(date) Processing failed on second attempt for $INPUT_FILE: file skipped" >> $log_file
